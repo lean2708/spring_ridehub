@@ -1,0 +1,17 @@
+server:
+  port: 8082
+
+spring:
+  application:
+   name: notification-service
+
+# SendGrid
+  sendgrid:
+    apiKey: ${SENDGRID_API_KEY}
+    sender:
+      email: ${SENDGRID_SENDER_EMAIL}
+    template-id:
+      otp-register: ${SENDGRID_TEMPLATE_OTP_REGISTER}
+      reset-password-verification: ${SENDGRID_TEMPLATE_RESET_PASSWORD_VERIFICATION}
+
+

@@ -15,15 +15,62 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     properties:
       hibernate:
         physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
 
-  # Flyway
-  flyway:
+  # Redis
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:123456}
+
+#  # Flyway
+#  flyway:
+#    enabled: true
+#    locations: classpath:db/migration
+#    baseline-on-migrate: true
+#    out-of-order: true
+
+
+# JWT
+jwt:
+  access-key: ${JWT_SIGNER_KEY}
+  refresh-key: ${JWT_REFRESH_KEY}
+  reset-key: ${JWT_RESET_KEY}
+  access-token:
+    expiry-in-minutes: ${JWT_ACCESS_TOKEN_IN_MINUTES:15}
+  refresh-token:
+    expiry-in-days: ${JWT_REFRESH_TOKEN_IN_DAYS:20}
+  reset:
+    expiry-in-minutes: ${JWT_RESET_TOKEN_IN_MINUTES:15}
+
+
+auth:
+  register:
+    verification-code:
+      expiration-minutes: 5
+
+  forgot-password:
+    verification-code:
+      expiration-minutes: 10
+
+
+
+# Swagger
+springdoc:
+  api-docs:
     enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    out-of-order: true
+  swagger-ui:
+    enabled: true
+open:
+  api:
+    title: ${OPEN_API_TITLE}
+    version: ${OPEN_API_VERSION}
+    description: ${OPEN_API_DESCRIPTION}
+    serverUrl: http://${SERVER_IP}:${server.port}
+    serverName: server dev
+    api-docs: auth-service
