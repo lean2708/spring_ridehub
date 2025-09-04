@@ -30,6 +30,8 @@ public class AuthController {
     private final AccountRecoveryService accountRecoveryService;
 
 
+    @Operation(summary = "Đăng nhập",
+            description = "API cho phép người dùng đăng nhập bằng email và mật khẩu để nhận token.")
     @PostMapping("/login")
     public ApiResponse<TokenResponse> login(@Valid @RequestBody LoginRequest request) throws JOSEException {
         log.info("Received login request for email: {}", request.getEmail());
@@ -41,6 +43,8 @@ public class AuthController {
                 .build();
     }
 
+    @Operation(summary = "Gửi OTP đăng ký",
+            description = "Bước 1: API gửi mã OTP tới email người dùng để bắt đầu quá trình đăng ký")
     @PostMapping("/register")
     public ApiResponse<OtpResponse> sendRegistrationOtp(@Valid @RequestBody EmailRequest request) throws JOSEException {
         log.info("Received registration request for email: {}", request.getEmail());
@@ -53,6 +57,8 @@ public class AuthController {
     }
 
 
+    @Operation(summary = "Xác thực OTP đăng ký",
+            description = "Bước 2: API xác thực mã OTP đã gửi tới email trong quá trình đăng ký.")
     @PostMapping("/register/verify")
     public ApiResponse<VerifyOtpResponse> verifyRegistrationOtp(@Valid @RequestBody VerifyOtpRequest request) {
         log.info("Verifying OTP for email: {}", request.getEmail());
@@ -64,7 +70,8 @@ public class AuthController {
                 .build();
     }
 
-
+    @Operation(summary = "Thêm thông tin cá nhân",
+            description = "Bước 3: API lưu tạm thông tin cá nhân của người dùng (họ tên, số điện thoại) trước khi thiết lập mật khẩu.")
     @PostMapping("/register/details")
     public ApiResponse<UserDetailsResponse> addUserDetails(@Valid @RequestBody RegisterDetailsRequest request) {
         log.info("Adding user details for email: {}", request.getEmail());
@@ -76,7 +83,8 @@ public class AuthController {
                 .build();
     }
 
-
+    @Operation(summary = "Đặt mật khẩu và hoàn tất đăng ký",
+            description = "Bước 4: API tạo tài khoản người dùng và thiết lập mật khẩu dựa trên thông tin đã xác thực trước đó.")
     @PostMapping("/register/set-password")
     public ApiResponse<TokenResponse> setPassword(@Valid @RequestBody SetPasswordRequest request) throws JOSEException {
         log.info("Setting password and creating user for email: {}", request.getEmail());
@@ -89,8 +97,9 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "Forgot Password",
-            description = "API này được sử dụng để quên mật khẩu")
+
+    @Operation(summary = "Quên mật khẩu",
+            description = "Bước 1: API gửi mã OTP tới email để bắt đầu quá trình khôi phục mật khẩu.")
     @PostMapping("/forgot-password")
     public ApiResponse<OtpResponse> forgotPassword(@Valid @RequestBody EmailRequest request) {
         log.info("Received forgot password request for email: {}", request.getEmail());
@@ -102,6 +111,8 @@ public class AuthController {
                 .build();
     }
 
+    @Operation(summary = "Xác thực mã OTP quên mật khẩu",
+            description = "Bước 2: API xác thực mã OTP trong quá trình khôi phục mật khẩu.")
     @PostMapping("/forgot-password/verify")
     public ApiResponse<ForgotPasswordToken> verifyForgotPasswordCode(@Valid @RequestBody VerifyOtpRequest request) throws JOSEException {
         log.info("Received verifying forgot password code for email: {}", request.getEmail());
@@ -113,6 +124,8 @@ public class AuthController {
                 .build();
     }
 
+    @Operation(summary = "Đặt lại mật khẩu",
+            description = "Bước 3: API đặt lại mật khẩu mới cho người dùng sau khi xác thực OTP thành công.")
     @PostMapping("/forgot-password/reset-password")
     public ApiResponse<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         log.info("Received password reset request");

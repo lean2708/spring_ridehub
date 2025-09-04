@@ -1,5 +1,6 @@
 package com.lean2708.auth_service.config;
 
+import com.lean2708.auth_service.constants.CorsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +11,16 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CorsProperties corsProperties;
 
     private final String[] PUBLIC_URLS  = {
             "/v1/public/**", "/swagger-ui*/**"
@@ -44,6 +50,24 @@ public class SecurityConfig {
 //                );
         return http.build();
     }
+
+    @Bean
+    public CorsFilter corsFilter(){
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        // cho phép yêu cầu từ cac cong
+        corsConfiguration.setAllowedOrigins(corsProperties.getAllowedOrigins());
+
+        corsConfiguration.addAllowedMethod("*"); // cho phép tất cả method
+        corsConfiguration.addAllowedHeader("*"); // cho phép tất cả header
+        corsConfiguration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration); // dang ki cau hinh
+
+        return new CorsFilter(urlBasedCorsConfigurationSource);
+    }
+
 
     // thiet lap url tren giao dien browser
     @Bean

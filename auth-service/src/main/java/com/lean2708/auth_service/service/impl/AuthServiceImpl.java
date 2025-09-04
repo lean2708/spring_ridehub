@@ -37,6 +37,8 @@ import java.text.ParseException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.lean2708.auth_service.constants.RegistrationStatus.*;
+
 
 @Service
 @Slf4j(topic = "AUTH-SERVICE")
@@ -102,10 +104,7 @@ public class AuthServiceImpl implements AuthService {
 
         UserRegistration userRegistration = getUserRegistration(request.getEmail());
 
-        userRegistration.getStatus().validateTransition(RegistrationStatus.OTP_VERIFIED);
-        userRegistration.setStatus(RegistrationStatus.OTP_VERIFIED);
-
-        userRegistrationRepository.save(userRegistration);
+        updateStatusRegistration(userRegistration, OTP_VERIFIED);
 
         // delete OTP
         otpVerificationRepository.delete(otpVerification);
@@ -124,9 +123,7 @@ public class AuthServiceImpl implements AuthService {
         userRegistration.setName(request.getName());
         userRegistration.setPhone(request.getPhone());
 
-        userRegistration.getStatus().validateTransition(RegistrationStatus.OTP_VERIFIED);
-        userRegistration.setStatus(RegistrationStatus.DETAILS_ADDED);
-        userRegistrationRepository.save(userRegistration);
+        updateStatusRegistration(userRegistration, DETAILS_ADDED);
 
         return UserDetailsResponse.builder()
                 .email(request.getEmail())
@@ -146,7 +143,7 @@ public class AuthServiceImpl implements AuthService {
 
         UserRegistration userRegistration = getUserRegistration(request.getEmail());
 
-        userRegistration.getStatus().validateTransition(RegistrationStatus.DETAILS_ADDED);
+        updateStatusRegistration(userRegistration, COMPLETED);
 
         User user = User.builder()
                 .email(userRegistration.getEmail())
@@ -156,6 +153,8 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         userRepository.save(user);
+//        userHasRoleService.saveUserHasRole(user, RoleEnum.USER);
+
         userRegistrationRepository.delete(userRegistration);
 
         return generateAndSaveTokenResponse(user);
@@ -211,9 +210,17 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    private void updateStatusRegistration(UserRegistration userRegistration, RegistrationStatus newStatus){
+        userRegistration.getStatus().validateTransition(newStatus);
 
-    private UserRegistration getUserRegistration(String email){
-        return userRegistrationRepository.findByEmail(email)
+        userRegistration.setStatus(newStatus);
+
+        userRegistrationRepository.save(userRegistration);
+    }
+
+
+    private UserRegistration getUserRegistration(String id){
+        return userRegistrationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Registration session not found"));
     }
 
