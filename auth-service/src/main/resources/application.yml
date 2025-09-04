@@ -7,7 +7,7 @@ spring:
     
   # Database - Postgresql
   datasource:
-    url: ${POSTGRESQL_URL:jdbc:postgresql://localhost:5432/adam-store}
+    url: ${POSTGRESQL_URL:jdbc:postgresql://localhost:5432/ride-hub}
     username: ${POSTGRESQL_USERNAME:postgres}
     password: ${POSTGRESQL_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
@@ -43,7 +43,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
 
 
 # JWT
