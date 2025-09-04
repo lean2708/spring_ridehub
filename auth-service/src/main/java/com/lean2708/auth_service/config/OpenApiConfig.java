@@ -3,7 +3,6 @@ package com.lean2708.auth_service.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -13,13 +12,11 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import java.util.List;
 
 
 @Configuration
-@Profile({"dev", "test"})
 public class OpenApiConfig {
 
     @Bean
@@ -27,8 +24,7 @@ public class OpenApiConfig {
                            @Value("${open.api.version}") String version,
                            @Value("${open.api.description}") String description,
                            @Value("${open.api.serverUrl}") String serverUrl,
-                           @Value("${open.api.serverName}") String serverName,
-                           @Value("${server.servlet.context-path}") String contextPath) {
+                           @Value("${open.api.serverName}") String serverName) {
 
         final String securitySchemeName = "bearerAuth";
 
@@ -36,7 +32,7 @@ public class OpenApiConfig {
                         .version(version)
                         .description(description)
                         .license(new License().name("Apache 2.0").url("https://springdoc.org")))
-                .servers(List.of(new Server().url(serverUrl + contextPath).description(serverName)))
+                .servers(List.of(new Server().url(serverUrl).description(serverName)))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName, new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT"))

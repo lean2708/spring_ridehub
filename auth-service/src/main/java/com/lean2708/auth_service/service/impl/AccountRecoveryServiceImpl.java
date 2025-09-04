@@ -2,6 +2,7 @@ package com.lean2708.auth_service.service.impl;
 
 import com.lean2708.auth_service.constants.OtpType;
 import com.lean2708.auth_service.constants.TokenType;
+import com.lean2708.auth_service.dto.event.EmailEvent;
 import com.lean2708.auth_service.dto.request.EmailRequest;
 import com.lean2708.auth_service.dto.request.ResetPasswordRequest;
 import com.lean2708.auth_service.dto.request.VerifyOtpRequest;
@@ -21,6 +22,7 @@ import com.nimbusds.jose.JOSEException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
     private final OtpVerificationRepository otpVerificationRepository;
     private final ForgotPasswordTokenRepository forgotPasswordTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Value("${jwt.reset.expiry-in-minutes}")
     private long resetTokenExpiration;
@@ -50,12 +53,12 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
 
         OtpVerification otpVerification = otpService.saveOtp(request.getEmail(), OtpType.FORGOT_PASSWORD);
 
-        // Kafka
-//        kafkaTemplate.send("email-reset-code", EmailEvent.builder()
-//                .toEmail(user.getEmail())
-//                .name(user.getName())
-//                .verificationCode(redisVerificationCode.getVerificationCode())
-//                .build());
+         // Kafka
+        kafkaTemplate.send("email-reset-code", EmailEvent.builder()
+                .toEmail(user.getEmail())
+                .name(user.getName())
+                .otp(otpVerification.getOtp())
+                .build());
 
         return OtpResponse.builder()
                 .email(otpVerification.getEmail())

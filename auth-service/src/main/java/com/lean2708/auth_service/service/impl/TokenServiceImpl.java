@@ -1,11 +1,15 @@
 package com.lean2708.auth_service.service.impl;
 
 import com.lean2708.auth_service.constants.TokenType;
+import com.lean2708.auth_service.entity.RefreshToken;
 import com.lean2708.auth_service.entity.Role;
 import com.lean2708.auth_service.entity.User;
 import com.lean2708.auth_service.exception.ForBiddenException;
 import com.lean2708.auth_service.exception.InvalidDataException;
 import com.lean2708.auth_service.exception.UnauthenticatedException;
+import com.lean2708.auth_service.repository.RefreshTokenRepository;
+import com.lean2708.auth_service.repository.RevokedTokenRepository;
+import com.lean2708.auth_service.repository.RoleRepository;
 import com.lean2708.auth_service.service.TokenService;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -31,6 +35,11 @@ import java.util.stream.Collectors;
 @Slf4j(topic = "TOKEN-SERVICE")
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
+
+    private final RoleRepository roleRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final RevokedTokenRepository revokedTokenRepository;
+
 
     @Value("${jwt.access-key}")
     private String SIGNER_KEY;
@@ -65,7 +74,7 @@ public class TokenServiceImpl implements TokenService {
                 .issueTime(new Date())
                 .expirationTime(Date.from(Instant.now().plusSeconds(durationInSeconds)))
                 .jwtID(UUID.randomUUID().toString())
-//                .claim("roles", getRolesFromUser(user))
+                .claim("roles", getRolesFromUser(user))
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
 
@@ -77,13 +86,13 @@ public class TokenServiceImpl implements TokenService {
         return jwsObject.serialize();
     }
 
-//    private Set<String> getRolesFromUser(User user) {
-//        Set<Role> roleSet = roleRepository.findRolesByUserId(user.getId());
-//
-//        return roleSet.stream()
-//                .map(Role::getName)
-//                .collect(Collectors.toSet());
-//    }
+    private Set<String> getRolesFromUser(User user) {
+        Set<Role> roleSet = roleRepository.findRolesByUserId(user.getId());
+
+        return roleSet.stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+    }
 
     @Override
     public SignedJWT verifyToken(String token, TokenType type) throws JOSEException, ParseException {
@@ -101,21 +110,26 @@ public class TokenServiceImpl implements TokenService {
             throw new UnauthenticatedException("Invalid or expired token");
         }
 
-//        // check accessToken (blacklist)
-//        if (type == TokenType.ACCESS_TOKEN && revokedTokenRepository.existsById(token)){
-//            throw new UnauthenticatedException("Access token has been revoked");
-//        }
-//
-//        if(type == TokenType.REFRESH_TOKEN && !refreshTokenRepository.existsByToken(token)){
-//            throw new UnauthenticatedException("Invalid refresh token");
-//        }
+        // check accessToken (blacklist)
+        if (type == TokenType.ACCESS_TOKEN && revokedTokenRepository.existsById(token)){
+            throw new UnauthenticatedException("Access token has been revoked");
+        }
+
+        if(type == TokenType.REFRESH_TOKEN && !refreshTokenRepository.existsByToken(token)){
+            throw new UnauthenticatedException("Invalid refresh token");
+        }
 
         return signedJWT;
     }
 
     @Override
     public void saveRefreshToken(String token) {
+        RefreshToken refreshToken = RefreshToken.builder()
+                .token(token)
+                .expiryDate(LocalDateTime.now().plusDays(refreshTokenExpiration))
+                .build();
 
+        refreshTokenRepository.save(refreshToken);
     }
 
     private String getKey(TokenType type){
@@ -136,18 +150,11 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
-//    public void saveRefreshToken(String token) {
-//        RefreshToken refreshToken = RefreshToken.builder()
-//                .token(token)
-//                .expiryDate(LocalDateTime.now().plusDays(refreshTokenExpiration))
-//                .build();
-//
-//        refreshTokenRepository.save(refreshToken);
-//    }
 
 
-//    @Scheduled(cron = "0 0 0 * * ?")
-//    public void removeExpiredRefreshTokens() {
-//        refreshTokenRepository.deleteExpiredTokens(LocalDateTime.now());
-//    }
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void removeExpiredRefreshTokens() {
+        refreshTokenRepository.deleteExpiredTokens(LocalDateTime.now());
+    }
+
 }

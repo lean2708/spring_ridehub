@@ -31,7 +31,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
+//                        .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
                         .anyRequest().permitAll()
                 );
 //                .oauth2ResourceServer(oauth2 ->

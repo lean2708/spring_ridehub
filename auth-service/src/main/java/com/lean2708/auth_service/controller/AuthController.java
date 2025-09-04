@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 @Slf4j(topic = "AUTH-CONTROLLER")
 @RequiredArgsConstructor
 @Validated
@@ -46,19 +48,19 @@ public class AuthController {
         return ApiResponse.<OtpResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result( authService.sendRegistrationOtp(request))
-                .message("OTP đã được gửi đến email. Vui lòng kiểm tra email của bạn")
+                .message("OTP has been sent to your email. Please check your inbox.")
                 .build();
     }
 
 
     @PostMapping("/register/verify")
-    public ApiResponse<VerifyOtpResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
+    public ApiResponse<VerifyOtpResponse> verifyRegistrationOtp(@Valid @RequestBody VerifyOtpRequest request) {
         log.info("Verifying OTP for email: {}", request.getEmail());
 
         return ApiResponse.<VerifyOtpResponse>builder()
                 .code(HttpStatus.OK.value())
-                .result(authService.verifyOtp(request))
-                .message("Xác thực OTP thành công.")
+                .result(authService.verifyRegistrationOtp(request))
+                .message("OTP verification successful")
                 .build();
     }
 
@@ -70,7 +72,7 @@ public class AuthController {
         return ApiResponse.<UserDetailsResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(authService.addUserDetails(request))
-                .message("Thông tin cá nhân đã được lưu tạm. Vui lòng đặt mật khẩu để hoàn tất đăng ký.")
+                .message("Your personal information has been temporarily saved. Please set a password to complete registration.")
                 .build();
     }
 
@@ -82,43 +84,55 @@ public class AuthController {
         return ApiResponse.<TokenResponse>builder()
                 .code(HttpStatus.CREATED.value())
                 .result(authService.createUserAndSetPassword(request))
-                .message("Đăng ký thành công.")
+                .message("Registration successful.")
                 .build();
     }
 
 
     @Operation(summary = "Forgot Password",
             description = "API này được sử dụng để quên mật khẩu")
-    @PostMapping("/public/auth/forgot-password")
+    @PostMapping("/forgot-password")
     public ApiResponse<OtpResponse> forgotPassword(@Valid @RequestBody EmailRequest request) {
         log.info("Received forgot password request for email: {}", request.getEmail());
 
         return ApiResponse.<OtpResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(accountRecoveryService.forgotPassword(request))
-                .message("Mã xác nhận đã được gửi vào email của bạn. Vui lòng kiểm tra để hoàn tất quá trình lấy lại mật khẩu")
+                .message("A verification code has been sent to your email. Please check your inbox to complete the password recovery process.")
                 .build();
     }
 
-    @PostMapping("/public/auth/forgot-password/verify")
+    @PostMapping("/forgot-password/verify")
     public ApiResponse<ForgotPasswordToken> verifyForgotPasswordCode(@Valid @RequestBody VerifyOtpRequest request) throws JOSEException {
         log.info("Received verifying forgot password code for email: {}", request.getEmail());
 
         return ApiResponse.<ForgotPasswordToken>builder()
                 .code(HttpStatus.OK.value())
                 .result(accountRecoveryService.verifyForgotPasswordCode(request))
-                .message("Mã xác nhận hợp lệ")
+                .message("Verification code is valid.")
                 .build();
     }
 
-    @PostMapping("/public/auth/forgot-password/reset-password")
+    @PostMapping("/forgot-password/reset-password")
     public ApiResponse<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         log.info("Received password reset request");
 
         accountRecoveryService.resetPassword(request);
         return ApiResponse.<Void>builder()
                 .code(HttpStatus.OK.value())
-                .message("Mật khẩu đã được thay đổi thành công")
+                .message("Password has been successfully changed.")
+                .build();
+    }
+
+
+    @PostMapping("/refresh-token")
+    public ApiResponse<TokenResponse> refreshToken(@Valid @RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        log.info("Received refresh token: {}", request.getRefreshToken());
+
+        return ApiResponse.<TokenResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(authService.refreshToken(request))
+                .message("Refresh Token")
                 .build();
     }
 

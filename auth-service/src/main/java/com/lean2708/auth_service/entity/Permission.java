@@ -1,4 +1,5 @@
 package com.lean2708.auth_service.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,3 +23,4 @@ public class Permission {
     private String method;
 
 }
+

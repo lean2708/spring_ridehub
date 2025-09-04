@@ -40,6 +40,8 @@ public class EmailServiceImpl implements EmailService {
     @Async
     public void sendTemplateEmail(String toEmail, String subject, String templateId, Map<String, String> dynamicData) throws IOException {
         try {
+            log.info("Preparing email to={} with subject='{}' and templateId='{}'", toEmail, subject, templateId);
+
             Email from = new Email(fromEmail);
             Email to = new Email(toEmail);
 
@@ -93,7 +95,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
-    @KafkaListener(topics = "email-reset-code", groupId = "adam-email-reset-group")
+    @KafkaListener(topics = "email-reset-code", groupId = "ridehub-email-reset-group")
     @Override
     public void sendPasswordResetCode(EmailEvent event) throws IOException {
         log.info("Sending password reset email to '{}', name='{}'", event.getToEmail(), event.getName());
