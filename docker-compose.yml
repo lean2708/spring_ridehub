@@ -1,0 +1,152 @@
+
+services:
+
+# Postgresql
+  postgres-adam-store:
+    image: postgres:15
+    container_name: postgres-ride-hub
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ride-hub
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - ride_hub_postgresql_data:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+    networks:
+      - ride_hub_backend
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+# Redis
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis-ride-hub
+    hostname: redis-ride-hub
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - REDIS_PASSWORD=123456
+      - REDIS_DISABLE_COMMANDS=FLUSHDB;FLUSHALL
+    command: redis-server --requirepass 123456
+    networks:
+      - ride_hub_backend
+
+
+# Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper-ride-hub
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - ride_hub_backend
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-ride-hub
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka_ride_hub_data:/var/lib/kafka/data
+    networks:
+      - ride_hub_backend
+
+# Eureka
+  eureka-server:
+    container_name: ridehub-eureka-server
+    image: lean2708/ridehub-eureka-server:0.0.1
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - ride_hub_backend
+
+
+# Auth Service
+  auth-service:
+    container_name: ridehub-auth-service
+    image: lean2708/ridehub-auth-service:0.0.1
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    depends_on:
+      - eureka-server
+      - postgres-adam-store
+      - redis
+    ports:
+      - "8081:8081"
+    networks:
+      - ride_hub_backend
+    env_file:
+      - ./.env
+
+
+# Notification Service
+  notification-service:
+    container_name: ridehub-notification-service
+    image: lean2708/ridehub-notification-service:0.0.1
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    depends_on:
+      - eureka-server
+      - kafka
+    ports:
+      - "8082:8082"
+    networks:
+      - ride_hub_backend
+    env_file:
+      - ./.env
+
+
+ # API Gateway
+  api-gateway:
+    container_name: ridehub-api-gateway
+    image: lean2708/ridehub-api-gateway:0.0.1
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    depends_on:
+      - eureka-server
+      - auth-service
+      - notification-service
+    ports:
+      - "8088:8088"
+    networks:
+      - ride_hub_backend
+    env_file:
+      - ./.env
+
+
+networks:
+  ride_hub_backend:
+    driver: bridge
+
+volumes:
+  ride_hub_postgresql_data:
+    driver: local
+  kafka_ride_hub_data:
+    driver: local
