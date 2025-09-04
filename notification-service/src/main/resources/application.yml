@@ -5,6 +5,9 @@ spring:
   application:
    name: notification-service
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
 # SendGrid
   sendgrid:
     apiKey: ${SENDGRID_API_KEY}
@@ -14,4 +17,7 @@ spring:
       otp-register: ${SENDGRID_TEMPLATE_OTP_REGISTER}
       reset-password-verification: ${SENDGRID_TEMPLATE_RESET_PASSWORD_VERIFICATION}
 
-
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

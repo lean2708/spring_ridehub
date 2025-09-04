@@ -4,8 +4,33 @@ server:
 spring:
   application:
     name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
 
+# Eureka-Client
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+# Swagger
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    urls:
+      - name: auth-service
+        url: /auth-service/v3/api-docs
+open:
+  api:
+    title: Spring-RideHub
+    version: v1.0.0
+    description: API Gateway cho Spring-RideHub
+    serverUrl: http://${SERVER_IP:localhost}:${server.port}
+    serverName: server dev
+    api-docs: api-gateway
