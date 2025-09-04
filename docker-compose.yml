@@ -2,7 +2,7 @@
 services:
 
 # Postgresql
-  postgres-adam-store:
+  postgres-ride-hub:
     image: postgres:15
     container_name: postgres-ride-hub
     restart: unless-stopped
@@ -94,7 +94,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - eureka-server
-      - postgres-adam-store
+      - postgres-ride-hub
       - redis
     ports:
       - "8081:8081"
