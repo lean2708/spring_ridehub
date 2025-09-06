@@ -86,6 +86,7 @@ public class TokenServiceImpl implements TokenService {
         return jwsObject.serialize();
     }
 
+
     private Set<String> getRolesFromUser(User user) {
         Set<Role> roleSet = roleRepository.findRolesByUserId(user.getId());
 
@@ -93,6 +94,7 @@ public class TokenServiceImpl implements TokenService {
                 .map(Role::getName)
                 .collect(Collectors.toSet());
     }
+
 
     @Override
     public SignedJWT verifyToken(String token, TokenType type) throws JOSEException, ParseException {
@@ -122,6 +124,7 @@ public class TokenServiceImpl implements TokenService {
         return signedJWT;
     }
 
+
     @Override
     public void saveRefreshToken(String token) {
         RefreshToken refreshToken = RefreshToken.builder()
@@ -132,6 +135,7 @@ public class TokenServiceImpl implements TokenService {
         refreshTokenRepository.save(refreshToken);
     }
 
+
     private String getKey(TokenType type){
         switch (type){
             case ACCESS_TOKEN -> {return SIGNER_KEY;}
@@ -140,6 +144,7 @@ public class TokenServiceImpl implements TokenService {
             default -> throw new InvalidDataException("Invalid Token Type");
         }
     }
+
 
     private long getDurationByToken(TokenType type) {
         switch (type) {

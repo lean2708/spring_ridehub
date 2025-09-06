@@ -1,6 +1,6 @@
 package com.lean2708.notification_service.config;
 
-import com.lean2708.notification_service.dto.event.EmailEvent;
+import com.lean2708.notification_service.event.EmailEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;

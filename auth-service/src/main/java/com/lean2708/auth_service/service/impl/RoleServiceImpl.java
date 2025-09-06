@@ -37,6 +37,7 @@ public class RoleServiceImpl implements RoleService {
         return roleMapper.toRoleResponse(roleDB);
     }
 
+
     @Override
     public PageResponse<RoleResponse> fetchAllRoles(Pageable pageable) {
         Page<Role> rolePage = roleRepository.findAll(pageable);
@@ -49,6 +50,7 @@ public class RoleServiceImpl implements RoleService {
                 .items(roleMapper.toListRoleResponse(rolePage.getContent()))
                 .build();
     }
+
 
     @Override
     public PageResponse<PermissionResponse> getPermissionsByRoleId(Pageable pageable, long roleId) {

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j(topic = "ROLE-CONTROLLER")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/v1")
+@RequestMapping("/roles")
 @RestController
 public class RoleController {
 
@@ -41,7 +41,7 @@ public class RoleController {
     }
 
 
-    @GetMapping("/roles")
+    @GetMapping
     public ApiResponse<PageResponse<RoleResponse>> fetchAll(@ParameterObject @PageableDefault Pageable pageable){
         log.info("Received request to fetch all roles for admin");
 
@@ -53,7 +53,7 @@ public class RoleController {
     }
 
 
-    @GetMapping("/roles/{roleId}/permissions")
+    @GetMapping("/{roleId}/permissions")
     public ApiResponse<PageResponse<PermissionResponse>> getPermissionsByRole(@ParameterObject @PageableDefault Pageable pageable,
                                                                               @PathVariable long roleId) {
         log.info("Received request to fetch all permissions by Role");

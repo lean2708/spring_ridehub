@@ -1,4 +1,4 @@
-package com.lean2708.notification_service.dto.event;
+package com.lean2708.notification_service.event;
 
 import lombok.*;
 

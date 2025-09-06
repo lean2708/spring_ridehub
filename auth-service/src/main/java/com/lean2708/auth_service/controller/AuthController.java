@@ -22,7 +22,7 @@ import java.text.ParseException;
 @Slf4j(topic = "AUTH-CONTROLLER")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/v1/auth")
+@RequestMapping("/auth")
 @RestController
 public class AuthController {
 

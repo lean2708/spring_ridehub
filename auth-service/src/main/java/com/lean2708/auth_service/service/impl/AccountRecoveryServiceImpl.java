@@ -45,6 +45,7 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
     @Value("${jwt.reset.expiry-in-minutes}")
     private long resetTokenExpiration;
 
+
     @Override
     public OtpResponse forgotPassword(EmailRequest request) {
         log.info("Forgot password requested for email: {}", request.getEmail());
@@ -67,6 +68,7 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
 
     }
 
+
     @Override
     public ForgotPasswordToken verifyForgotPasswordCode(VerifyOtpRequest request) throws JOSEException {
         log.info("Verifying forgot password code for email: {}", request.getEmail());
@@ -87,6 +89,7 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
 
         return forgotPasswordTokenRepository.save(token);
     }
+
 
     @Override
     public void resetPassword(ResetPasswordRequest request) {
@@ -113,6 +116,7 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
 
         forgotPasswordTokenRepository.delete(forgotPasswordToken);
     }
+
 
     private User getUserByEmail(String email){
         return userRepository.findByEmail(email)

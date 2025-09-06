@@ -1,9 +1,6 @@
 package com.lean2708.auth_service.service.impl;
 
-import com.lean2708.auth_service.constants.EntityStatus;
-import com.lean2708.auth_service.constants.OtpType;
-import com.lean2708.auth_service.constants.RegistrationStatus;
-import com.lean2708.auth_service.constants.TokenType;
+import com.lean2708.auth_service.constants.*;
 import com.lean2708.auth_service.dto.basic.EntityBasic;
 import com.lean2708.auth_service.dto.event.EmailEvent;
 import com.lean2708.auth_service.dto.request.*;
@@ -25,6 +22,7 @@ import com.lean2708.auth_service.repository.UserRepository;
 import com.lean2708.auth_service.service.AuthService;
 import com.lean2708.auth_service.service.OtpService;
 import com.lean2708.auth_service.service.TokenService;
+import com.lean2708.auth_service.service.relationship.UserHasRoleService;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +50,9 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final UserRegistrationRepository userRegistrationRepository;
     private final OtpVerificationRepository otpVerificationRepository;
+    private final UserHasRoleService userHasRoleService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+
 
     @Override
     public TokenResponse login(LoginRequest request) throws JOSEException {
@@ -68,6 +68,7 @@ public class AuthServiceImpl implements AuthService {
         }
         return generateAndSaveTokenResponse(userDB);
     }
+
 
     @Override
     public OtpResponse sendRegistrationOtp(EmailRequest request) {
@@ -96,6 +97,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+
     @Override
     public VerifyOtpResponse verifyRegistrationOtp(VerifyOtpRequest request) {
         log.info("Verifying OTP {} for email: {}", request.getOtp(), request.getEmail());
@@ -113,6 +115,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(request.getEmail())
                 .build();
     }
+
 
     @Override
     public UserDetailsResponse addUserDetails(RegisterDetailsRequest request) {
@@ -132,6 +135,7 @@ public class AuthServiceImpl implements AuthService {
                 .status(userRegistration.getStatus())
                 .build();
     }
+
 
     @Override
     public TokenResponse createUserAndSetPassword(SetPasswordRequest request) throws JOSEException {
@@ -153,12 +157,13 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         userRepository.save(user);
-//        userHasRoleService.saveUserHasRole(user, RoleEnum.USER);
+        userHasRoleService.saveUserHasRole(user, RoleEnum.USER);
 
         userRegistrationRepository.delete(userRegistration);
 
         return generateAndSaveTokenResponse(user);
     }
+
 
     @Override
     public TokenResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
@@ -210,6 +215,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+
     private void updateStatusRegistration(UserRegistration userRegistration, RegistrationStatus newStatus){
         userRegistration.getStatus().validateTransition(newStatus);
 
@@ -223,6 +229,7 @@ public class AuthServiceImpl implements AuthService {
         return userRegistrationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Registration session not found"));
     }
+
 
     private User getUserByEmail(String email){
         return userRepository.findByEmail(email)

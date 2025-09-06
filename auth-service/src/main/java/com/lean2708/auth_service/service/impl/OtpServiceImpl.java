@@ -65,6 +65,7 @@ public class OtpServiceImpl implements OtpService {
         }
     }
 
+
     private OtpVerification getOtpVerification(String id){
         return otpVerificationRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("OTP not exists"));

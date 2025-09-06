@@ -25,7 +25,7 @@ docker-compose up -d
 **3. Swagger Documentation Guide (API Document):**
 - **After running the application, you can access Swagger UI at:**
 ```java
-http://localhost:8088/swagger-ui.html
+http://localhost:8088/ride-hub/v1/swagger-ui.html
 ```
 - The default URL to retrieve the API documentation in JSON format **(Explore section)**:
 ```java

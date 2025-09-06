@@ -1,15 +1,23 @@
 server:
   port: 8088
 
+app:
+  api-prefix: /ride-hub/v1
+
 spring:
   application:
     name: api-gateway
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+          # Path cua gateway
+            - Path=${app.api-prefix}/auth/**
+          filters:
+          # Handle
+            - StripPrefix=2
 
 # Eureka-Client
 eureka:
@@ -21,11 +29,14 @@ eureka:
 springdoc:
   api-docs:
     enabled: true
+    path: /v3/api-docs
   swagger-ui:
     enabled: true
+    path: ${app.api-prefix}/swagger-ui.html
     urls:
-      - name: auth-service
-        url: /auth-service/v3/api-docs
+      - name: gateway-docs
+        url: ${app.api-prefix}/swagger/docs
+
 open:
   api:
     title: Spring-RideHub
@@ -34,3 +45,8 @@ open:
     serverUrl: http://${SERVER_IP:localhost}:${server.port}
     serverName: server dev
     api-docs: api-gateway
+
+
+services:
+  auth:
+    url: http://localhost:8081
