@@ -9,7 +9,7 @@ import lombok.Setter;
 @Builder
 public class OtpResponse {
 
-    private String email;
+    private String phone;
     private String otp;
 
 }

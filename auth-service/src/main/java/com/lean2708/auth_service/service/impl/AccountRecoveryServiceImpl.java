@@ -2,8 +2,8 @@ package com.lean2708.auth_service.service.impl;
 
 import com.lean2708.auth_service.constants.OtpType;
 import com.lean2708.auth_service.constants.TokenType;
-import com.lean2708.auth_service.dto.event.EmailEvent;
-import com.lean2708.auth_service.dto.request.EmailRequest;
+import com.lean2708.auth_service.dto.event.SmsEvent;
+import com.lean2708.auth_service.dto.request.PhoneRequest;
 import com.lean2708.auth_service.dto.request.ResetPasswordRequest;
 import com.lean2708.auth_service.dto.request.VerifyOtpRequest;
 import com.lean2708.auth_service.dto.response.OtpResponse;
@@ -45,41 +45,42 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
     @Value("${jwt.reset.expiry-in-minutes}")
     private long resetTokenExpiration;
 
+
     @Override
-    public OtpResponse forgotPassword(EmailRequest request) {
-        log.info("Forgot password requested for email: {}", request.getEmail());
+    public OtpResponse forgotPassword(PhoneRequest request) {
+        log.info("Forgot password requested for phone: {}", request.getPhone());
 
-        User user = getUserByEmail(request.getEmail());
+        User user = getUserByPhone(request.getPhone());
 
-        OtpVerification otpVerification = otpService.saveOtp(request.getEmail(), OtpType.FORGOT_PASSWORD);
+        OtpVerification otpVerification = otpService.saveOtp(request.getPhone(), OtpType.FORGOT_PASSWORD);
 
          // Kafka
-        kafkaTemplate.send("email-reset-code", EmailEvent.builder()
-                .toEmail(user.getEmail())
-                .name(user.getName())
+        kafkaTemplate.send("reset-password-sms-events", SmsEvent.builder()
+                .toPhone(user.getPhone())
                 .otp(otpVerification.getOtp())
                 .build());
 
         return OtpResponse.builder()
-                .email(otpVerification.getEmail())
+                .phone(otpVerification.getPhone())
                 .otp(otpVerification.getOtp())
                 .build();
 
     }
 
+
     @Override
     public ForgotPasswordToken verifyForgotPasswordCode(VerifyOtpRequest request) throws JOSEException {
-        log.info("Verifying forgot password code for email: {}", request.getEmail());
+        log.info("Verifying forgot password code for phone: {}", request.getPhone());
 
-        OtpVerification otpVerification = otpService.getOtp(request.getEmail(), OtpType.FORGOT_PASSWORD, request.getOtp());
+        OtpVerification otpVerification = otpService.getOtp(request.getPhone(), OtpType.FORGOT_PASSWORD, request.getOtp());
 
-        User user = getUserByEmail(request.getEmail());
+        User user = getUserByPhone(request.getPhone());
 
         String forgotPasswordToken = tokenService.generateToken(user, TokenType.RESET_PASSWORD_TOKEN);
 
         ForgotPasswordToken token = ForgotPasswordToken.builder()
                 .forgotPasswordToken(forgotPasswordToken)
-                .email(request.getEmail())
+                .phone(request.getPhone())
                 .ttl(resetTokenExpiration * 60)
                 .build();
 
@@ -87,6 +88,7 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
 
         return forgotPasswordTokenRepository.save(token);
     }
+
 
     @Override
     public void resetPassword(ResetPasswordRequest request) {
@@ -102,7 +104,7 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
                 .findById(request.getForgotPasswordToken())
                 .orElseThrow( () -> new ResourceNotFoundException("Forgot Password Token not found"));
 
-        User user = getUserByEmail(forgotPasswordToken.getEmail());
+        User user = getUserByPhone(forgotPasswordToken.getPhone());
 
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new InvalidDataException("Password and Confirm Password do not match");
@@ -114,8 +116,11 @@ public class AccountRecoveryServiceImpl implements AccountRecoveryService {
         forgotPasswordTokenRepository.delete(forgotPasswordToken);
     }
 
-    private User getUserByEmail(String email){
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+    private User getUserByPhone(String phone){
+        return userRepository.findByPhone(phone)
+                .orElseThrow(() -> new ResourceNotFoundException("User not exists"));
     }
+
+
 }

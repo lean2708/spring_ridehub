@@ -41,12 +41,6 @@
 			<artifactId>spring-kafka</artifactId>
 			<version>3.3.1</version>
 		</dependency>
-		<!--SendGrid-->
-		<dependency>
-			<groupId>com.sendgrid</groupId>
-			<artifactId>sendgrid-java</artifactId>
-			<version>4.9.3</version>
-		</dependency>
 		<!--EurekaClient-->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -64,6 +58,10 @@
 			<groupId>io.github.cdimascio</groupId>
 			<artifactId>dotenv-java</artifactId>
 			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

@@ -8,16 +8,15 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
-# SendGrid
-  sendgrid:
-    apiKey: ${SENDGRID_API_KEY}
-    sender:
-      email: ${SENDGRID_SENDER_EMAIL}
-    template-id:
-      otp-register: ${SENDGRID_TEMPLATE_OTP_REGISTER}
-      reset-password-verification: ${SENDGRID_TEMPLATE_RESET_PASSWORD_VERIFICATION}
-
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+
+sms:
+  device:
+    id: ${SMS_DEVICE_ID}
+  api:
+    url: ${SMS_API_URL}
+    username: ${SMS_API_USERNAME}
+    password: ${SMS_API_PASSWORD}

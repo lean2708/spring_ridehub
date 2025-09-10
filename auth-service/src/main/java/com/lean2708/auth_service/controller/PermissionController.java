@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j(topic = "PERMISSION-CONTROLLER")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/v1")
+@RequestMapping("permissions")
 @RestController
 public class PermissionController {
 
     private final PermissionService permissionService;
 
 
-    @GetMapping("/permissions/{id}")
+    @GetMapping("/{id}")
     public ApiResponse<PermissionResponse> fetchRoleById(@Min(value = 1, message = "ID phải lớn hơn 0")
                                                          @PathVariable long id){
         log.info("Received request to fetch permission by id: {}", id);
@@ -37,7 +37,7 @@ public class PermissionController {
     }
 
 
-    @GetMapping("/permissions")
+    @GetMapping
     public ApiResponse<PageResponse<PermissionResponse>> fetchAll(@ParameterObject @PageableDefault Pageable pageable){
         log.info("Received request to fetch all permissions for admin");
 

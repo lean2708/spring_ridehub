@@ -20,6 +20,9 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomJwtDecoder customJwtDecoder;
+    private final CustomJwtAuthenticationConverter customJwtAuthenticationConverter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CorsProperties corsProperties;
 
     private final String[] PUBLIC_URLS  = {
@@ -39,15 +42,15 @@ public class SecurityConfig {
                         .requestMatchers(PUBLIC_URLS).permitAll()
 //                        .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
                         .anyRequest().permitAll()
+                )
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(
+                                        jwtConfigurer -> jwtConfigurer
+                                                .decoder(customJwtDecoder)
+                                                .jwtAuthenticationConverter(customJwtAuthenticationConverter)
+                                )
+                                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 );
-//                .oauth2ResourceServer(oauth2 ->
-//                        oauth2.jwt(
-//                                        jwtConfigurer -> jwtConfigurer
-//                                                .decoder(customJwtDecoder)
-//                                                .jwtAuthenticationConverter(customJwtAuthenticationConverter)
-//                                )
-//                                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//                );
         return http.build();
     }
 

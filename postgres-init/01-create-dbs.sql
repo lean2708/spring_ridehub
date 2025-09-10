@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS ridehub_auth;
+
+CREATE DATABASE IF NOT EXISTS ridehub_profile;

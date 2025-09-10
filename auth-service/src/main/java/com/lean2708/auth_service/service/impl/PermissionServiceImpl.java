@@ -21,6 +21,7 @@ public class PermissionServiceImpl implements PermissionService {
     private final PermissionRepository permissionRepository;
     private final PermissionMapper permissionMapper;
 
+
     @Override
     public PermissionResponse fetchPermissionById(Long id) {
         log.info("Fetch Permission By Id: {}", id);
@@ -30,6 +31,7 @@ public class PermissionServiceImpl implements PermissionService {
 
         return permissionMapper.toPermissionResponse(permissionDB);
     }
+
 
     @Override
     public PageResponse<PermissionResponse> fetchAllPermissions(Pageable pageable) {

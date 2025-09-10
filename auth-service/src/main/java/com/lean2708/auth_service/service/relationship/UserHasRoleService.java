@@ -20,7 +20,8 @@ public class UserHasRoleService {
     private final UserHasRoleRepository userHasRoleRepository;
     private final RoleRepository roleRepository;
 
-    public UserHasRole saveUserHasRole(User user, RoleEnum roleEnum){
+
+    public void saveUserHasRole(User user, RoleEnum roleEnum){
         Role role = roleRepository.findByName(roleEnum.name())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not exists"));
 
@@ -28,6 +29,6 @@ public class UserHasRoleService {
                 .id(new UserHasRoleId(user.getId(), role.getId()))
                 .build();
 
-        return userHasRoleRepository.save(userHasRole);
+        userHasRoleRepository.save(userHasRole);
     }
 }
