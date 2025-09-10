@@ -1,4 +1,4 @@
-package com.lean2708.auth_service.exception;
+package com.lean2708.file_service.exception;
 
 public class UnauthenticatedException extends RuntimeException {
 

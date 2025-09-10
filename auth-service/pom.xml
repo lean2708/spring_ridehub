@@ -59,6 +59,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!--Common-Library-->
+		<dependency>
+			<groupId>com.lean2708</groupId>
+			<artifactId>common-library</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<!--Security-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -96,18 +102,6 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.30</version>
-			<scope>provided</scope>
-		</dependency>
-		<!--Mapstruct-->
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>1.5.2.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct-processor</artifactId>
-			<version>1.5.2.Final</version>
 			<scope>provided</scope>
 		</dependency>
 		<!--Swagger-->

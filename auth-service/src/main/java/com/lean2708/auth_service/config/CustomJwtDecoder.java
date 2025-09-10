@@ -16,8 +16,10 @@ import java.text.ParseException;
 public class CustomJwtDecoder implements JwtDecoder {
 
     private final TokenService tokenService;
+
     // lay tu JwtDecoderConfig
     private final NimbusJwtDecoder nimbusJwtDecoder;
+
 
     @Override
     public Jwt decode(String token) throws JwtException {

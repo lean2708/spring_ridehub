@@ -3,9 +3,11 @@ package com.lean2708.profile_service.controller;
 import com.lean2708.profile_service.dto.request.UserProfileRequest;
 import com.lean2708.profile_service.dto.response.ApiResponse;
 import com.lean2708.profile_service.service.UserProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j(topic = "INTERNAL-PROFILE-CONTROLLER")
 @RestController
+@Validated
 @RequestMapping("/internal/profiles")
 @RequiredArgsConstructor
 public class InternalProfileController {
@@ -20,7 +23,7 @@ public class InternalProfileController {
     private final UserProfileService userProfileService;
 
     @PostMapping
-    public ApiResponse<Void> createProfile(@RequestBody UserProfileRequest request) {
+    public ApiResponse<Void> createProfile(@Valid @RequestBody UserProfileRequest request) {
         log.info("Received request to create profile: {}", request);
 
         userProfileService.createProfile(request);
