@@ -1,11 +1,10 @@
-package com.lean2708.auth_service.exception;
+package com.lean2708.file_service.exception;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -117,22 +116,6 @@ public class GlobalException {
                 .body(errorResponse);
     }
 
-
-    @ExceptionHandler({ForBiddenException.class, AccessDeniedException.class})
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(Exception e, WebRequest request) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .path(request.getDescription(false).replace("uri=", ""))
-                .status(HttpStatus.FORBIDDEN.value())
-                .error(HttpStatus.FORBIDDEN.getReasonPhrase())
-                .message(e.getMessage())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(errorResponse);
-    }
-
-
     @ExceptionHandler(UnauthenticatedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthenticatedException(UnauthenticatedException e, WebRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
@@ -147,6 +130,18 @@ public class GlobalException {
                 .body(errorResponse);
     }
 
+    @ExceptionHandler(value = {FileException.class})
+    public ResponseEntity<ErrorResponse> handleFileUploadException(Exception ex, WebRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(ex.getClass().getSimpleName())
+                .message(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 
 
 }

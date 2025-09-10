@@ -1,4 +1,4 @@
-package com.lean2708.auth_service.exception;
+package com.lean2708.file_service.exception;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

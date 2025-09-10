@@ -10,20 +10,30 @@
         <module name="api-gateway" />
         <module name="eureka-server" />
       </profile>
-      <profile name="Annotation profile for profile-service" enabled="true">
+      <profile name="Annotation profile for common-library" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="common-library" />
+      </profile>
+      <profile name="Annotation profile for file-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
         </processorPath>
-        <module name="profile-service" />
-        <module name="notification-service" />
         <module name="auth-service" />
+        <module name="profile-service" />
+        <module name="file-service" />
+        <module name="notification-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="common-library" target="17" />
       <module name="discovery-server" target="17" />
       <module name="spring_ridehub" target="1.5" />
     </bytecodeTargetLevel>
@@ -35,6 +45,7 @@
       <module name="common-library" options="" />
       <module name="discovery-server" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
+      <module name="file-service" options="-parameters" />
       <module name="notification-service" options="-parameters" />
       <module name="profile-service" options="-parameters" />
     </option>

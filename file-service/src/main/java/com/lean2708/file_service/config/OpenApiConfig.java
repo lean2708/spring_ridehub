@@ -1,4 +1,4 @@
-package com.lean2708.auth_service.config;
+package com.lean2708.file_service.config;
 
 
 import io.swagger.v3.oas.models.Components;
@@ -44,7 +44,7 @@ public class OpenApiConfig {
     public GroupedOpenApi groupedOpenApi(@Value("${open.api.api-docs}") String apiDocs){
         return GroupedOpenApi.builder()
                 .group(apiDocs)
-                .packagesToScan("com.lean2708.auth_service.controller")
+                .packagesToScan("com.lean2708.file_service.controller")
                 .build();
     }
 
