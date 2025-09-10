@@ -42,9 +42,8 @@ open:
     title: Spring-RideHub
     version: v1.0.0
     description: API Gateway cho Spring-RideHub
-    serverUrl: http://${SERVER_IP:localhost}:${server.port}
+    serverUrl: http://${SWAGGER_HOST:localhost}:${server.port}
     serverName: server dev
-    api-docs: api-gateway
 
 
 services:

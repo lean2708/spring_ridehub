@@ -7,7 +7,7 @@ spring:
     
   # Database - Postgresql
   datasource:
-    url: ${POSTGRESQL_URL:jdbc:postgresql://localhost:5432/ride-hub}
+    url: ${DB_AUTH_URL:jdbc:postgresql://localhost:5432/ridehub-auth}
     username: ${POSTGRESQL_USERNAME:postgres}
     password: ${POSTGRESQL_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
@@ -70,7 +70,7 @@ open:
     title: auth-service
     version: v1.0.0
     description: Auth Service
-    serverUrl: http://${SERVER_IP}:${server.port}
+    serverUrl: http://${SWAGGER_HOST}:${server.port}
     serverName: server dev
     api-docs: auth-service
 

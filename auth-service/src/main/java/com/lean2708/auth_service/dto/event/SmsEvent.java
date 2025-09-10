@@ -6,10 +6,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailEvent {
+public class SmsEvent {
 
-    private String toEmail;
-    private String name;
+    private String toPhone;
     private String otp;
 
 }

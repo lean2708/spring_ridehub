@@ -139,6 +139,12 @@
 			<artifactId>spring-kafka</artifactId>
 			<version>3.3.1</version>
 		</dependency>
+		<!--Feign-Client-->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		<!--Eureka-->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>

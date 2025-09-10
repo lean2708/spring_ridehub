@@ -19,7 +19,7 @@ public class OtpVerification {
     @Id
     private String redisKey;
 
-    private String email;
+    private String phone;
     private String otp;
 
     @Enumerated(EnumType.STRING)

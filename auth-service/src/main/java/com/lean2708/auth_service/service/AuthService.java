@@ -6,7 +6,6 @@ import com.lean2708.auth_service.dto.response.TokenResponse;
 import com.lean2708.auth_service.dto.response.UserDetailsResponse;
 import com.lean2708.auth_service.dto.response.VerifyOtpResponse;
 import com.nimbusds.jose.JOSEException;
-import jakarta.validation.Valid;
 
 import java.text.ParseException;
 
@@ -14,7 +13,7 @@ public interface AuthService {
 
     TokenResponse login(LoginRequest request) throws JOSEException;
 
-    OtpResponse sendRegistrationOtp(EmailRequest request);
+    OtpResponse sendRegistrationOtp(PhoneRequest request);
 
     VerifyOtpResponse verifyRegistrationOtp(VerifyOtpRequest request);
 

@@ -2,7 +2,7 @@ package com.lean2708.auth_service.service.impl;
 
 import com.lean2708.auth_service.constants.*;
 import com.lean2708.auth_service.dto.basic.EntityBasic;
-import com.lean2708.auth_service.dto.event.EmailEvent;
+import com.lean2708.auth_service.dto.event.SmsEvent;
 import com.lean2708.auth_service.dto.request.*;
 import com.lean2708.auth_service.dto.response.OtpResponse;
 import com.lean2708.auth_service.dto.response.TokenResponse;
@@ -19,6 +19,7 @@ import com.lean2708.auth_service.repository.OtpVerificationRepository;
 import com.lean2708.auth_service.repository.RoleRepository;
 import com.lean2708.auth_service.repository.UserRegistrationRepository;
 import com.lean2708.auth_service.repository.UserRepository;
+import com.lean2708.auth_service.repository.httpclient.ProfileClient;
 import com.lean2708.auth_service.service.AuthService;
 import com.lean2708.auth_service.service.OtpService;
 import com.lean2708.auth_service.service.TokenService;
@@ -51,14 +52,15 @@ public class AuthServiceImpl implements AuthService {
     private final UserRegistrationRepository userRegistrationRepository;
     private final OtpVerificationRepository otpVerificationRepository;
     private final UserHasRoleService userHasRoleService;
+    private final ProfileClient profileClient;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
 
     @Override
     public TokenResponse login(LoginRequest request) throws JOSEException {
-        log.info("Handling login for email: {}", request.getEmail());
+        log.info("Handling login for phone: {}", request.getPhone());
 
-        User userDB = userRepository.findByEmail(request.getEmail())
+        User userDB = userRepository.findByPhone(request.getPhone())
                 .orElseThrow(()-> new ResourceNotFoundException("User not exists"));
 
         boolean isAuthenticated = passwordEncoder.matches(request.getPassword(), userDB.getPassword());
@@ -71,28 +73,31 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public OtpResponse sendRegistrationOtp(EmailRequest request) {
-        log.info("Send registration OTP for email: {}", request.getEmail());
+    public OtpResponse sendRegistrationOtp(PhoneRequest request) {
+        log.info("Send registration OTP for phone: {}", request.getPhone());
+
+        if(userRepository.existsByPhone(request.getPhone())){
+            throw new InvalidDataException("User exists");
+        }
 
         UserRegistration userRegistration = UserRegistration.builder()
-                .email(request.getEmail())
+                .phone(request.getPhone())
                 .status(RegistrationStatus.PENDING)
                 .build();
 
-        OtpVerification otpVerification = otpService.saveOtp(request.getEmail(), OtpType.REGISTER);
+        OtpVerification otpVerification = otpService.saveOtp(request.getPhone(), OtpType.REGISTER);
 
         userRegistration.setTtl(otpVerification.getTtl());
         userRegistrationRepository.save(userRegistration);
 
          // Kafka
-        kafkaTemplate.send("email-register", EmailEvent.builder()
-                .toEmail(userRegistration.getEmail())
-                .name(userRegistration.getName())
+        kafkaTemplate.send("register-sms-events", SmsEvent.builder()
+                .toPhone(userRegistration.getPhone())
                 .otp(otpVerification.getOtp())
                 .build());
 
         return OtpResponse.builder()
-                .email(request.getEmail())
+                .phone(request.getPhone())
                 .otp(otpVerification.getOtp())
                 .build();
     }
@@ -100,11 +105,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public VerifyOtpResponse verifyRegistrationOtp(VerifyOtpRequest request) {
-        log.info("Verifying OTP {} for email: {}", request.getOtp(), request.getEmail());
+        log.info("Verifying OTP for phone: {}", request.getPhone());
 
-        OtpVerification otpVerification = otpService.getOtp(request.getEmail(), OtpType.REGISTER, request.getOtp());
+        OtpVerification otpVerification = otpService.getOtp(request.getPhone(), OtpType.REGISTER, request.getOtp());
 
-        UserRegistration userRegistration = getUserRegistration(request.getEmail());
+        UserRegistration userRegistration = getUserRegistration(request.getPhone());
 
         updateStatusRegistration(userRegistration, OTP_VERIFIED);
 
@@ -112,26 +117,27 @@ public class AuthServiceImpl implements AuthService {
         otpVerificationRepository.delete(otpVerification);
 
         return VerifyOtpResponse.builder()
-                .email(request.getEmail())
+                .phone(request.getPhone())
+                .verified(true)
                 .build();
     }
 
 
     @Override
     public UserDetailsResponse addUserDetails(RegisterDetailsRequest request) {
-        log.info("Adding user details for email: {}", request.getEmail());
+        log.info("Adding user details for phone: {}", request.getPhone());
 
-        UserRegistration userRegistration = getUserRegistration(request.getEmail());
+        UserRegistration userRegistration = getUserRegistration(request.getPhone());
 
         userRegistration.setName(request.getName());
-        userRegistration.setPhone(request.getPhone());
+        userRegistration.setEmail(request.getEmail());
 
         updateStatusRegistration(userRegistration, DETAILS_ADDED);
 
         return UserDetailsResponse.builder()
-                .email(request.getEmail())
-                .name(request.getName())
                 .phone(request.getPhone())
+                .name(request.getName())
+                .email(request.getEmail())
                 .status(userRegistration.getStatus())
                 .build();
     }
@@ -139,25 +145,33 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenResponse createUserAndSetPassword(SetPasswordRequest request) throws JOSEException {
-        log.info("Creating user and setting password for email: {}", request.getEmail());
+        log.info("Creating user and setting password for phone: {}", request.getPhone());
 
         if(!request.getNewPassword().equals(request.getConfirmPassword())){
             throw new InvalidDataException("Password and Confirm Password do not match");
         }
 
-        UserRegistration userRegistration = getUserRegistration(request.getEmail());
+        UserRegistration userRegistration = getUserRegistration(request.getPhone());
 
         updateStatusRegistration(userRegistration, COMPLETED);
 
         User user = User.builder()
-                .email(userRegistration.getEmail())
                 .phone(userRegistration.getPhone())
+                .email(userRegistration.getEmail())
                 .password(passwordEncoder.encode(request.getNewPassword()))
                 .status(EntityStatus.ACTIVE)
                 .build();
 
         userRepository.save(user);
         userHasRoleService.saveUserHasRole(user, RoleEnum.USER);
+
+        // create profile
+        profileClient.createProfile(UserProfileRequest.builder()
+                        .userId(user.getId())
+                        .name(user.getName())
+                        .phone(user.getPhone())
+                        .email(user.getEmail())
+                .build());
 
         userRegistrationRepository.delete(userRegistration);
 

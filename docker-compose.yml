@@ -7,11 +7,11 @@ services:
     container_name: postgres-ride-hub
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ride-hub
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
     volumes:
       - ride_hub_postgresql_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
     ports:
       - '5433:5432'
     networks:

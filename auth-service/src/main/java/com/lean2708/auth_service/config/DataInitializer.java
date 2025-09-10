@@ -2,10 +2,12 @@ package com.lean2708.auth_service.config;
 
 import com.lean2708.auth_service.constants.EntityStatus;
 import com.lean2708.auth_service.constants.RoleEnum;
+import com.lean2708.auth_service.dto.request.UserProfileRequest;
 import com.lean2708.auth_service.entity.Role;
 import com.lean2708.auth_service.entity.User;
 import com.lean2708.auth_service.repository.RoleRepository;
 import com.lean2708.auth_service.repository.UserRepository;
+import com.lean2708.auth_service.repository.httpclient.ProfileClient;
 import com.lean2708.auth_service.service.relationship.UserHasRoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserHasRoleService userHasRoleService;
+    private final ProfileClient profileClient;
 
     @Value("${admin.name}")
     private String adminName;
@@ -85,6 +88,14 @@ public class DataInitializer implements CommandLineRunner {
                 .build());
 
         userHasRoleService.saveUserHasRole(admin, RoleEnum.ADMIN);
+
+        // create profile
+        profileClient.createProfile(UserProfileRequest.builder()
+                .userId(admin.getId())
+                .name(admin.getName())
+                .phone(admin.getPhone())
+                .email(admin.getEmail())
+                .build());
 
         log.info("Successfully initialized admin user with email: {}", admin.getEmail());
     }

@@ -17,7 +17,7 @@ public class ForgotPasswordToken {
     @Id
     private String forgotPasswordToken;
 
-    private String email;
+    private String phone;
 
     @TimeToLive
     private long ttl;

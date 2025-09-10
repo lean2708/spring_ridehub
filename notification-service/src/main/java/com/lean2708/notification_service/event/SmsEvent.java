@@ -1,5 +1,4 @@
 package com.lean2708.notification_service.event;
-
 import lombok.*;
 
 @Getter
@@ -7,10 +6,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailEvent {
+public class SmsEvent {
 
-    private String toEmail;
-    private String name;
+    private String toPhone;
     private String otp;
 
 }

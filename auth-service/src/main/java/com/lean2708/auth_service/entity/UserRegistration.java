@@ -17,9 +17,9 @@ import org.springframework.data.redis.core.TimeToLive;
 public class UserRegistration {
 
     @Id
+    private String phone;
     private String email;
     private String name;
-    private String phone;
     private String password;
 
     @Enumerated(EnumType.STRING)

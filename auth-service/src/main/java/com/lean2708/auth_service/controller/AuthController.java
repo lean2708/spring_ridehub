@@ -31,10 +31,10 @@ public class AuthController {
 
 
     @Operation(summary = "Đăng nhập",
-            description = "API cho phép người dùng đăng nhập bằng email và mật khẩu để nhận token.")
+            description = "API cho phép người dùng đăng nhập bằng số điện thoại  và mật khẩu để nhận token.")
     @PostMapping("/login")
     public ApiResponse<TokenResponse> login(@Valid @RequestBody LoginRequest request) throws JOSEException {
-        log.info("Received login request for email: {}", request.getEmail());
+        log.info("Received login request for phone: {}", request.getPhone());
 
         return ApiResponse.<TokenResponse>builder()
                 .code(HttpStatus.OK.value())
@@ -44,15 +44,15 @@ public class AuthController {
     }
 
     @Operation(summary = "Gửi OTP đăng ký",
-            description = "Bước 1: API gửi mã OTP tới email người dùng để bắt đầu quá trình đăng ký")
+            description = "Bước 1: API gửi mã OTP tới số điện thoại người dùng để bắt đầu quá trình đăng ký")
     @PostMapping("/register")
-    public ApiResponse<OtpResponse> sendRegistrationOtp(@Valid @RequestBody EmailRequest request) throws JOSEException {
-        log.info("Received registration request for email: {}", request.getEmail());
+    public ApiResponse<OtpResponse> sendRegistrationOtp(@Valid @RequestBody PhoneRequest request) throws JOSEException {
+        log.info("Received registration request for phone: {}", request.getPhone());
 
         return ApiResponse.<OtpResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result( authService.sendRegistrationOtp(request))
-                .message("OTP has been sent to your email. Please check your inbox.")
+                .message("OTP has been sent to your phone. Please check your inbox.")
                 .build();
     }
 
@@ -61,7 +61,7 @@ public class AuthController {
             description = "Bước 2: API xác thực mã OTP đã gửi tới email trong quá trình đăng ký.")
     @PostMapping("/register/verify")
     public ApiResponse<VerifyOtpResponse> verifyRegistrationOtp(@Valid @RequestBody VerifyOtpRequest request) {
-        log.info("Verifying OTP for email: {}", request.getEmail());
+        log.info("Verifying OTP for phone: {}", request.getPhone());
 
         return ApiResponse.<VerifyOtpResponse>builder()
                 .code(HttpStatus.OK.value())
@@ -74,7 +74,7 @@ public class AuthController {
             description = "Bước 3: API lưu tạm thông tin cá nhân của người dùng (họ tên, số điện thoại) trước khi thiết lập mật khẩu.")
     @PostMapping("/register/details")
     public ApiResponse<UserDetailsResponse> addUserDetails(@Valid @RequestBody RegisterDetailsRequest request) {
-        log.info("Adding user details for email: {}", request.getEmail());
+        log.info("Adding user details for phone: {}", request.getPhone());
 
         return ApiResponse.<UserDetailsResponse>builder()
                 .code(HttpStatus.OK.value())
@@ -87,7 +87,7 @@ public class AuthController {
             description = "Bước 4: API tạo tài khoản người dùng và thiết lập mật khẩu dựa trên thông tin đã xác thực trước đó.")
     @PostMapping("/register/set-password")
     public ApiResponse<TokenResponse> setPassword(@Valid @RequestBody SetPasswordRequest request) throws JOSEException {
-        log.info("Setting password and creating user for email: {}", request.getEmail());
+        log.info("Setting password and creating user for phone: {}", request.getPhone());
 
         return ApiResponse.<TokenResponse>builder()
                 .code(HttpStatus.CREATED.value())
@@ -101,13 +101,13 @@ public class AuthController {
     @Operation(summary = "Quên mật khẩu",
             description = "Bước 1: API gửi mã OTP tới email để bắt đầu quá trình khôi phục mật khẩu.")
     @PostMapping("/forgot-password")
-    public ApiResponse<OtpResponse> forgotPassword(@Valid @RequestBody EmailRequest request) {
-        log.info("Received forgot password request for email: {}", request.getEmail());
+    public ApiResponse<OtpResponse> forgotPassword(@Valid @RequestBody PhoneRequest request) {
+        log.info("Received forgot password request for phone: {}", request.getPhone());
 
         return ApiResponse.<OtpResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(accountRecoveryService.forgotPassword(request))
-                .message("A verification code has been sent to your email. Please check your inbox to complete the password recovery process.")
+                .message("A verification code has been sent to your phone. Please check your inbox to complete the password recovery process.")
                 .build();
     }
 
@@ -115,7 +115,7 @@ public class AuthController {
             description = "Bước 2: API xác thực mã OTP trong quá trình khôi phục mật khẩu.")
     @PostMapping("/forgot-password/verify")
     public ApiResponse<ForgotPasswordToken> verifyForgotPasswordCode(@Valid @RequestBody VerifyOtpRequest request) throws JOSEException {
-        log.info("Received verifying forgot password code for email: {}", request.getEmail());
+        log.info("Received verifying forgot password code for phone: {}", request.getPhone());
 
         return ApiResponse.<ForgotPasswordToken>builder()
                 .code(HttpStatus.OK.value())

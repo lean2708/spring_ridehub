@@ -24,14 +24,14 @@ public class OtpServiceImpl implements OtpService {
     private long forgotPasswordExpiration;
 
 
-    public OtpVerification saveOtp(String email, OtpType type){
+    public OtpVerification saveOtp(String phone, OtpType type){
         String otp = generateVerificationCode();
 
-        String redisKey = email + ":" + type;
+        String redisKey = phone + ":" + type;
 
         OtpVerification otpVerification = OtpVerification.builder()
                 .redisKey(redisKey)
-                .email(email)
+                .phone(phone)
                 .otp(otp)
                 .otpType(type)
                 .ttl(getExpirationTimeByType(type) * 60)
@@ -40,8 +40,8 @@ public class OtpServiceImpl implements OtpService {
         return otpVerificationRepository.save(otpVerification);
     }
 
-    public OtpVerification getOtp(String email, OtpType type, String otp){
-        String redisKey = email + ":" + type;
+    public OtpVerification getOtp(String phone, OtpType type, String otp){
+        String redisKey = phone + ":" + type;
 
         OtpVerification otpVerification = getOtpVerification(redisKey);
 

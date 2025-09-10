@@ -9,6 +9,7 @@ import lombok.Setter;
 @Builder
 public class VerifyOtpResponse {
 
-    private String email;
+    private String phone;
+    private boolean verified;
 
 }
