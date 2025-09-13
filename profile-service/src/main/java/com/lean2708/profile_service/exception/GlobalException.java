@@ -1,5 +1,9 @@
 package com.lean2708.profile_service.exception;
 
+import com.lean2708.common_library.exception.ErrorResponse;
+import com.lean2708.common_library.exception.InvalidDataException;
+import com.lean2708.common_library.exception.ResourceNotFoundException;
+import com.lean2708.common_library.exception.UnauthenticatedException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

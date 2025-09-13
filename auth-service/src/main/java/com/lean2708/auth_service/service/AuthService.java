@@ -1,11 +1,9 @@
 package com.lean2708.auth_service.service;
 
 import com.lean2708.auth_service.dto.request.*;
-import com.lean2708.auth_service.dto.response.OtpResponse;
-import com.lean2708.auth_service.dto.response.TokenResponse;
-import com.lean2708.auth_service.dto.response.UserDetailsResponse;
-import com.lean2708.auth_service.dto.response.VerifyOtpResponse;
+import com.lean2708.auth_service.dto.response.*;
 import com.nimbusds.jose.JOSEException;
+import jakarta.validation.Valid;
 
 import java.text.ParseException;
 
@@ -22,4 +20,10 @@ public interface AuthService {
     TokenResponse createUserAndSetPassword(SetPasswordRequest request) throws JOSEException;
 
     TokenResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException;
+
+    void changePassword(ChangePasswordRequest request);
+
+    void logout(TokenRequest request) throws ParseException, JOSEException;
+
+    IntrospectResponse introspect(TokenRequest request);
 }

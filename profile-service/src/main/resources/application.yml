@@ -1,5 +1,7 @@
 server:
   port: 8083
+  servlet:
+    context-path: /profiles
 
 spring:
   application:
@@ -40,5 +42,10 @@ open:
     version: v1.0.0
     description: Profile Service
     serverUrl: http://${SWAGGER_HOST}:${server.port}
-    serverName: server dev
-    api-docs: profile-service
+    serverName: profile server
+
+
+gateway:
+  allowed-window-ms: 60000
+  jwt:
+    secret: ${GATEWAY_JWT_SECRET}

@@ -1,5 +1,6 @@
 package com.lean2708.auth_service.exception;
 
+import com.lean2708.common_library.exception.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

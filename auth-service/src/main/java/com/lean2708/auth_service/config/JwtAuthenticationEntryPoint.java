@@ -1,6 +1,6 @@
 package com.lean2708.auth_service.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lean2708.auth_service.exception.ErrorResponse;
+import com.lean2708.common_library.exception.ErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

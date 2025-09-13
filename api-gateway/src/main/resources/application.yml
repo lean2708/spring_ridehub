@@ -19,6 +19,33 @@ spring:
           # Handle
             - StripPrefix=2
 
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            # Path cua gateway
+            - Path=${app.api-prefix}/notifications/**
+          filters:
+            # Handle
+            - StripPrefix=2
+
+        - id: profile-service
+          uri: lb://profile-service
+          predicates:
+            # Path cua gateway
+            - Path=${app.api-prefix}/profiles/**
+          filters:
+            # Handle
+            - StripPrefix=2
+
+        - id: file-service
+          uri: lb://file-service
+          predicates:
+            # Path cua gateway
+            - Path=${app.api-prefix}/files/**
+          filters:
+            # Handle
+            - StripPrefix=2
+
 # Eureka-Client
 eureka:
   client:
@@ -43,9 +70,11 @@ open:
     version: v1.0.0
     description: API Gateway cho Spring-RideHub
     serverUrl: http://${SWAGGER_HOST:localhost}:${server.port}
-    serverName: server dev
+    serverName: api-gateway server
 
 
-services:
-  auth:
-    url: http://localhost:8081
+gateway:
+  url: ${GATEWAY_URL:http://localhost:8088}
+  jwt:
+    secret: ${GATEWAY_JWT_SECRET}
+    expiry-in-minutes: ${GATEWAY_JWT_EXPIRY_MINUTES:15}

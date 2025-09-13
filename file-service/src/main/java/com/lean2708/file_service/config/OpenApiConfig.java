@@ -40,13 +40,6 @@ public class OpenApiConfig {
                 .security(List.of(new SecurityRequirement().addList(securitySchemeName)));
     }
 
-    @Bean
-    public GroupedOpenApi groupedOpenApi(@Value("${open.api.api-docs}") String apiDocs){
-        return GroupedOpenApi.builder()
-                .group(apiDocs)
-                .packagesToScan("com.lean2708.file_service.controller")
-                .build();
-    }
 
 }
 

@@ -11,12 +11,6 @@
 	<name>common-library</name>
 	<description>Common Library</description>
 
-	<scm>
-		<connection>scm:git:git://github.com/lean2708/common-library.git</connection>
-		<developerConnection>scm:git:ssh://github.com/lean2708/common-library.git</developerConnection>
-		<url>https://github.com/lean2708/common-library</url>
-	</scm>
-
 	<properties>
 		<java.version>17</java.version>
 		<jackson.version>2.17.2</jackson.version>
@@ -62,5 +56,18 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>maven-releases</id>
+			<name>Releases</name>
+			<url>http://localhost:8081/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>maven-snapshots</id>
+			<name>Snapshots</name>
+			<url>http://localhost:8081/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>

@@ -1,3 +1,7 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /files
 
 spring:
   application:
@@ -46,8 +50,7 @@ open:
     version: v1.0.0
     description: File Service
     serverUrl: http://${SWAGGER_HOST}:${server.port}
-    serverName: server dev
-    api-docs: file-service
+    serverName: file server
 
 
 # Eureka Client
@@ -55,3 +58,8 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+gateway:
+  allowed-window-ms: 60000
+  jwt:
+    secret: ${GATEWAY_JWT_SECRET}

@@ -24,7 +24,6 @@ import java.util.List;
 @Slf4j(topic = "FILE-CONTROLLER")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/files")
 @RestController
 public class FileController {
 
