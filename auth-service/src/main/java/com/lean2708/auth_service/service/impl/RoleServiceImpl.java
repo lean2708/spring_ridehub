@@ -1,16 +1,16 @@
 package com.lean2708.auth_service.service.impl;
 
-import com.lean2708.auth_service.dto.response.PageResponse;
 import com.lean2708.auth_service.dto.response.PermissionResponse;
 import com.lean2708.auth_service.dto.response.RoleResponse;
 import com.lean2708.auth_service.entity.Permission;
 import com.lean2708.auth_service.entity.Role;
-import com.lean2708.auth_service.exception.ResourceNotFoundException;
 import com.lean2708.auth_service.mapper.PermissionMapper;
 import com.lean2708.auth_service.mapper.RoleMapper;
 import com.lean2708.auth_service.repository.PermissionRepository;
 import com.lean2708.auth_service.repository.RoleRepository;
 import com.lean2708.auth_service.service.RoleService;
+import com.lean2708.common_library.dto.response.PageResponse;
+import com.lean2708.common_library.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

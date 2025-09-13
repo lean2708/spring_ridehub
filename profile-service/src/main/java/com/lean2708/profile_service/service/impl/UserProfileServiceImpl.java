@@ -1,16 +1,17 @@
 package com.lean2708.profile_service.service.impl;
 
+import com.lean2708.common_library.exception.ResourceNotFoundException;
 import com.lean2708.profile_service.dto.request.UpdateProfileRequest;
 import com.lean2708.profile_service.dto.request.UserProfileRequest;
 import com.lean2708.profile_service.dto.response.UserProfileResponse;
 import com.lean2708.profile_service.entity.UserProfile;
-import com.lean2708.profile_service.exception.ResourceNotFoundException;
 import com.lean2708.profile_service.mapper.ProfileMapper;
 import com.lean2708.profile_service.repository.UserProfileRepository;
 import com.lean2708.profile_service.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j(topic = "USER-PROFILE-SERVICE")
 @Service
@@ -51,6 +52,11 @@ public class UserProfileServiceImpl implements UserProfileService {
         updateProfile(profile, request);
 
         return profileMapper.toProfileResponse(userProfileRepository.save(profile));
+    }
+
+    @Override
+    public UserProfileResponse updateAvatar(MultipartFile file) {
+        return null;
     }
 
 

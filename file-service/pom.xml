@@ -60,6 +60,23 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!--Security-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<!--JWT-->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>9.1.2</version>
+		</dependency>
+		<!--Common-Library-->
+		<dependency>
+			<groupId>com.lean2708</groupId>
+			<artifactId>common-library</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<!--Dotenv-->
 		<dependency>
 			<groupId>io.github.cdimascio</groupId>
@@ -102,13 +119,12 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<!--Common-Library-->
+		<!--Dotenv-->
 		<dependency>
-			<groupId>com.lean2708</groupId>
-			<artifactId>common-library</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>dotenv-java</artifactId>
+			<version>3.0.0</version>
 		</dependency>
-
 
 	</dependencies>
 

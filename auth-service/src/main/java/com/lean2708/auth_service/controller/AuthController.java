@@ -5,6 +5,7 @@ import com.lean2708.auth_service.dto.response.*;
 import com.lean2708.auth_service.entity.ForgotPasswordToken;
 import com.lean2708.auth_service.service.AccountRecoveryService;
 import com.lean2708.auth_service.service.AuthService;
+import com.lean2708.common_library.dto.response.ApiResponse;
 import com.nimbusds.jose.JOSEException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -12,17 +13,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
 @Slf4j(topic = "AUTH-CONTROLLER")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/auth")
 @RestController
 public class AuthController {
 
@@ -146,6 +143,44 @@ public class AuthController {
                 .code(HttpStatus.OK.value())
                 .result(authService.refreshToken(request))
                 .message("Refresh Token")
+                .build();
+    }
+
+    @Operation(summary = "Change Password",
+            description = "API này được sử dụng để thay đổi password khi user đã đăng nhập")
+    @PutMapping("/change-password")
+    public ApiResponse<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request){
+        log.info("Received change password request for user");
+
+        authService.changePassword(request);
+        return ApiResponse.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message("Password changed successfully")
+                .build();
+    }
+
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(@Valid @RequestBody TokenRequest request) throws JOSEException, ParseException {
+        log.info("Received logout request");
+
+        authService.logout(request);
+        return ApiResponse.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message("Logout")
+                .build();
+    }
+
+
+    @Operation(summary = "Introspect token")
+    @PostMapping("/introspect")
+    public ApiResponse<IntrospectResponse> introspect(@Valid @RequestBody TokenRequest request) throws JOSEException, ParseException {
+        log.info("Received introspect request for token");
+
+        return ApiResponse.<IntrospectResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(authService.introspect(request))
+                .message("Introspect successful")
                 .build();
     }
 

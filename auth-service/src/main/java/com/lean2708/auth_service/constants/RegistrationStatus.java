@@ -1,6 +1,7 @@
 package com.lean2708.auth_service.constants;
-import com.lean2708.auth_service.exception.InvalidDataException;
 
+
+import com.lean2708.common_library.exception.InvalidDataException;
 
 public enum RegistrationStatus {
 

@@ -1,5 +1,5 @@
 package com.lean2708.auth_service.dto.response;
-import com.lean2708.auth_service.dto.basic.EntityBasic;
+import com.lean2708.common_library.dto.basic.EntityBasic;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

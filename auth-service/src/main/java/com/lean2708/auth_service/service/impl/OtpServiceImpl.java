@@ -1,10 +1,10 @@
 package com.lean2708.auth_service.service.impl;
 import com.lean2708.auth_service.constants.OtpType;
 import com.lean2708.auth_service.entity.OtpVerification;
-import com.lean2708.auth_service.exception.InvalidDataException;
-import com.lean2708.auth_service.exception.ResourceNotFoundException;
 import com.lean2708.auth_service.repository.OtpVerificationRepository;
 import com.lean2708.auth_service.service.OtpService;
+import com.lean2708.common_library.exception.InvalidDataException;
+import com.lean2708.common_library.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

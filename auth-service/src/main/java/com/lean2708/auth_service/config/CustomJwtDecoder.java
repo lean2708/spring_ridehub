@@ -2,8 +2,8 @@ package com.lean2708.auth_service.config;
 
 
 import com.lean2708.auth_service.constants.TokenType;
-import com.lean2708.auth_service.exception.UnauthenticatedException;
 import com.lean2708.auth_service.service.TokenService;
+import com.lean2708.common_library.exception.UnauthenticatedException;
 import com.nimbusds.jose.JOSEException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.*;
@@ -19,7 +19,6 @@ public class CustomJwtDecoder implements JwtDecoder {
 
     // lay tu JwtDecoderConfig
     private final NimbusJwtDecoder nimbusJwtDecoder;
-
 
     @Override
     public Jwt decode(String token) throws JwtException {

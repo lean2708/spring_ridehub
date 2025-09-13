@@ -4,13 +4,12 @@ import com.lean2708.auth_service.constants.TokenType;
 import com.lean2708.auth_service.entity.RefreshToken;
 import com.lean2708.auth_service.entity.Role;
 import com.lean2708.auth_service.entity.User;
-import com.lean2708.auth_service.exception.ForBiddenException;
-import com.lean2708.auth_service.exception.InvalidDataException;
-import com.lean2708.auth_service.exception.UnauthenticatedException;
 import com.lean2708.auth_service.repository.RefreshTokenRepository;
 import com.lean2708.auth_service.repository.RevokedTokenRepository;
 import com.lean2708.auth_service.repository.RoleRepository;
 import com.lean2708.auth_service.service.TokenService;
+import com.lean2708.common_library.exception.InvalidDataException;
+import com.lean2708.common_library.exception.UnauthenticatedException;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -69,8 +68,8 @@ public class TokenServiceImpl implements TokenService {
         long durationInSeconds = getDurationByToken(type);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getEmail())
-                .issuer(user.getName())
+                .subject(String.valueOf(user.getId()))
+                .issuer("auth-service")
                 .issueTime(new Date())
                 .expirationTime(Date.from(Instant.now().plusSeconds(durationInSeconds)))
                 .jwtID(UUID.randomUUID().toString())
