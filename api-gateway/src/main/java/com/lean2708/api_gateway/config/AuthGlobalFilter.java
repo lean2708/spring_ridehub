@@ -41,23 +41,32 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     private String apiPrefix;
 
     private static final List<String> WHITELIST_NO_PREFIX = List.of(
-            "**/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/**/v3/api-docs/**",
+            "/**/swagger-ui/**",
+            "/**/swagger-ui.html"
     );
 
     // Có prefix gateway (api public for gateway)
     private static final List<String> WHITELIST_WITH_PREFIX = List.of(
-            "**/v3/api-docs",
-            "/auth/login"
+            "/auth/login",
+            "/auth/register",
+            "/auth/register/verify",
+            "/auth/register/details",
+            "/auth/forgot-password",
+            "/auth/forgot-password/verify",
+            "/auth/forgot-password/reset-password"
     );
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("Authentication filter...");
+        String path = exchange.getRequest().getURI().getPath();
+
+        log.info("Authentication filter triggered for path: {}", path);
 
         // check WHITELIST
         if (isPublicEndpoint(exchange.getRequest())) {
+            log.info("Public/whitelisted endpoint detected: {}", path);
+
             ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                     .header("X-Skip-Auth", "true")
                     .build();
@@ -67,23 +76,30 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
         List<String> authHeaders = exchange.getRequest().getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION);
         if (authHeaders.isEmpty()) {
+            log.warn("Missing Authorization header for request: {}", path);
+
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
 
         String authHeader = authHeaders.get(0);
         if (!authHeader.startsWith("Bearer ")) {
+            log.warn("Invalid Authorization header format: {}", authHeader);
+
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
         String token = authHeader.substring(7);
 
+        // call introspect
         Mono<IntrospectResponse> introspectMono = authFeignClient.introspectToken(token);
 
         return introspectMono.flatMap(result -> {
 
             // Token khong hop le
             if (result == null || !result.isValid()) {
+                log.warn("Introspect token invalid for request: {}", path);
+
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
@@ -96,6 +112,8 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             try {
                 gatewayJwt = generateGatewayJwt(userId, roles, gatewayJwtExpiryMinutes * 60 * 1000L);
             } catch (JOSEException e) {
+                log.error("Failed to generate Gateway JWT for userId {}", userId, e);
+
                 throw new RuntimeException(e);
             }
 
@@ -106,6 +124,9 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
                     .header("X-Gateway-Ts", String.valueOf(System.currentTimeMillis()))
                     .header("X-Gateway-Jwt", gatewayJwt)
                     .build();
+
+            log.debug("Gateway headers -> userId={}, roles={}, ts={}",
+                    userId, String.join(",", roles), System.currentTimeMillis());
 
             return chain.filter(exchange.mutate().request(mutatedRequest).build());
         })

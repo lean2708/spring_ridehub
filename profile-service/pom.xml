@@ -75,9 +75,9 @@
 		</dependency>
 		<!--Common-Library-->
 		<dependency>
-			<groupId>com.lean2708</groupId>
+			<groupId>io.github.lean2708</groupId>
 			<artifactId>common-library</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<!--Postgresql-->
 		<dependency>
@@ -91,6 +91,11 @@
 			<artifactId>lombok</artifactId>
 			<version>1.18.30</version>
 			<scope>provided</scope>
+		</dependency>
+		<!--Feign-Client-->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 		<!--Dotenv-->
 		<dependency>

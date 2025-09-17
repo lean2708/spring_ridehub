@@ -1,4 +1,4 @@
-package com.lean2708.profile_service.config;
+package com.lean2708.auth_service.config;
 
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
 
 
 @Slf4j(topic = "GATEWAY-FILTER")

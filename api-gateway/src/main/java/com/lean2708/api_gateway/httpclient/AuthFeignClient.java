@@ -21,7 +21,7 @@ public class AuthFeignClient {
                 .build();
 
         return webClient.post()
-                .uri("/auth/introspect")
+                .uri("/auth/internal/introspect")
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<ApiResponse<IntrospectResponse>>() {})

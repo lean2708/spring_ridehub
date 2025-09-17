@@ -1,4 +1,4 @@
-package com.lean2708.auth_service.constants;
+package com.lean2708.api_gateway.constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;

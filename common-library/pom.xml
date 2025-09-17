@@ -4,12 +4,36 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.lean2708</groupId>
+	<groupId>io.github.lean2708</groupId>
 	<artifactId>common-library</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
+
 	<name>common-library</name>
-	<description>Common Library</description>
+	<description>Common utilities for RideHub</description>
+	<url>https://github.com/lean2708/spring_ridehub</url>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>lean2708</id>
+			<name>Le Van An</name>
+			<email>lean270804@gmail.com</email>
+		</developer>
+	</developers>
+
+
+	<scm>
+		<connection>scm:git:git://github.com/lean2708/spring_ridehub.git</connection>
+		<developerConnection>scm:git:ssh://github.com/lean2708/spring_ridehub.git</developerConnection>
+		<url>https://github.com/lean2708/spring_ridehub</url>
+	</scm>
 
 	<properties>
 		<java.version>17</java.version>
@@ -54,20 +78,75 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Javadoc -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.6.3</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- GPG signing -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>3.2.4</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<version>0.5.0</version>
+			</plugin>
+
+
 		</plugins>
 	</build>
 
 	<distributionManagement>
 		<repository>
-			<id>maven-releases</id>
-			<name>Releases</name>
-			<url>http://localhost:8081/repository/maven-releases/</url>
+			<id>central</id>
+			<url>https://central.sonatype.com/artifact-deploy</url>
 		</repository>
 		<snapshotRepository>
-			<id>maven-snapshots</id>
-			<name>Snapshots</name>
-			<url>http://localhost:8081/repository/maven-snapshots/</url>
+			<id>central</id>
+			<url>https://central.sonatype.com/artifact-deploy/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+
+
+
 
 </project>

@@ -10,6 +10,16 @@
         <module name="api-gateway" />
         <module name="eureka-server" />
       </profile>
+      <profile name="Annotation profile for common-library" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="common-library" />
+      </profile>
       <profile name="Annotation profile for profile-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -19,7 +29,6 @@
         </processorPath>
         <module name="profile-service" />
         <module name="auth-service" />
-        <module name="common-library" />
         <module name="file-service" />
         <module name="notification-service" />
       </profile>

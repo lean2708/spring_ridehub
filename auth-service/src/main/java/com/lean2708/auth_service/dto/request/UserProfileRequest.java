@@ -11,8 +11,9 @@ import lombok.*;
 public class UserProfileRequest {
 
     private Long userId;
+    private String phone;
     private String name;
     private String email;
-    private String phone;
+
 
 }

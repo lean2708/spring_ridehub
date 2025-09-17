@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,14 +32,22 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
     @Value("${gateway.jwt.secret}")
     private String gatewayJwtSecret;
 
+    private static final List<String> PUBLIC_PATTERNS = List.of(
+            "/**/internal/**",
+            "/**/swagger-ui/**",
+            "/**/v3/api-docs/**",
+            "/swagger-ui.html"
+    );
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
 
-        // skip internal
-        if (path.startsWith("/internal/") || path.contains("/internal/")) {
-            log.info("Skipping auth for internal API: {}", path);
+        // skip (internal, swagger)
+        if (isWhitelisted(path)) {
+            log.info("Skipping auth for API: {}", path);
             filterChain.doFilter(request, response);
             return;
         }
@@ -82,9 +91,11 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
             return;
         }
 
+        List<SimpleGrantedAuthority> authorities = parseRoles(rolesHeader);
+
         log.info("Authenticated request {} for userId {}", path, userId);
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -121,4 +132,10 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.trim()))
                 .toList();
     }
+
+    private boolean isWhitelisted(String path) {
+        AntPathMatcher matcher = new AntPathMatcher();
+        return PUBLIC_PATTERNS.stream().anyMatch(pattern -> matcher.match(pattern, path));
+    }
+
 }
