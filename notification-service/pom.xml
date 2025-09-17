@@ -55,9 +55,9 @@
 		</dependency>
 		<!--Common-Library-->
 		<dependency>
-			<groupId>com.lean2708</groupId>
+			<groupId>io.github.lean2708</groupId>
 			<artifactId>common-library</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<!--Dotenv-->
 		<dependency>

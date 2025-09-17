@@ -1,17 +1,24 @@
 package com.lean2708.profile_service.service.impl;
 
+import com.lean2708.common_library.dto.response.ApiResponse;
 import com.lean2708.common_library.exception.ResourceNotFoundException;
 import com.lean2708.profile_service.dto.request.UpdateProfileRequest;
 import com.lean2708.profile_service.dto.request.UserProfileRequest;
+import com.lean2708.profile_service.dto.response.FileResponse;
 import com.lean2708.profile_service.dto.response.UserProfileResponse;
 import com.lean2708.profile_service.entity.UserProfile;
 import com.lean2708.profile_service.mapper.ProfileMapper;
 import com.lean2708.profile_service.repository.UserProfileRepository;
+import com.lean2708.profile_service.repository.httpclient.FileClient;
 import com.lean2708.profile_service.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j(topic = "USER-PROFILE-SERVICE")
 @Service
@@ -20,6 +27,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
     private final ProfileMapper profileMapper;
+    private final FileClient fileClient;
 
     @Override
     public void createProfile(UserProfileRequest request) {
@@ -27,6 +35,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         UserProfile profile = UserProfile.builder()
                 .userId(request.getUserId())
+                .phone(request.getPhone())
                 .name(request.getName())
                 .email(request.getEmail())
                 .build();
@@ -56,7 +65,14 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     public UserProfileResponse updateAvatar(MultipartFile file) {
-        return null;
+        log.info("Update Avatar For User");
+        // upload file
+        ApiResponse<List<FileResponse>> apiResponse = fileClient.uploadImage(Collections.singletonList(file));
+        FileResponse fileResponse = apiResponse.getResult().get(0);
+
+        UserProfile profile = getUserProfileByCurrentUser();
+        profile.setAvatarUrl(fileResponse.getImageUrl());
+        return profileMapper.toProfileResponse(userProfileRepository.save(profile));
     }
 
 
@@ -81,5 +97,13 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
     }
 
+    private UserProfile getUserProfileByCurrentUser(){
+        String userId = (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        return userProfileRepository.findByUserId(Long.parseLong(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not exists"));
+    }
 
 }

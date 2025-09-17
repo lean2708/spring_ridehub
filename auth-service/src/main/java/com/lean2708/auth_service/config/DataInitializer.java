@@ -31,6 +31,9 @@ public class DataInitializer implements CommandLineRunner {
     private final UserHasRoleService userHasRoleService;
     private final ProfileClient profileClient;
 
+    @Value("${admin.phone}")
+    private String adminPhone;
+
     @Value("${admin.name}")
     private String adminName;
 
@@ -42,18 +45,24 @@ public class DataInitializer implements CommandLineRunner {
 
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         log.info("INIT APPLICATION STARTING....");
+        try {
+            if (roleRepository.count() == 0) {
+                initRoles();
+            }
 
-        if (roleRepository.count() == 0) {
-            initRoles();
+            if (!userRepository.findByEmail(adminEmail).isPresent()) {
+                initAdmin();
+            }
+
+            log.info("INIT APPLICATION FINISHED SUCCESSFULLY");
+        }catch (Exception e) {
+            log.error("Cannot create admin profile on startup", e);
         }
 
-        if (!userRepository.findByEmail(adminEmail).isPresent()) {
-            initAdmin();
-        }
 
-        log.info("INIT APPLICATION FINISHED SUCCESSFULLY");
+
     }
 
     @Transactional
@@ -81,8 +90,9 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Received request to initialize admin user.");
 
         User admin = userRepository.save(User.builder()
-                .name(adminName)
+                .phone(adminPhone)
                 .email(adminEmail)
+                .name(adminName)
                 .password(passwordEncoder.encode(adminPassword))
                 .status(EntityStatus.ACTIVE)
                 .build());

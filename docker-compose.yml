@@ -76,6 +76,7 @@ services:
   eureka-server:
     container_name: ridehub-eureka-server
     image: lean2708/ridehub-eureka-server:0.0.1
+    restart: unless-stopped
     build:
       context: ./eureka-server
       dockerfile: Dockerfile
@@ -89,6 +90,7 @@ services:
   auth-service:
     container_name: ridehub-auth-service
     image: lean2708/ridehub-auth-service:0.0.1
+    restart: unless-stopped
     build:
       context: ./auth-service
       dockerfile: Dockerfile
@@ -108,6 +110,7 @@ services:
   notification-service:
     container_name: ridehub-notification-service
     image: lean2708/ridehub-notification-service:0.0.1
+    restart: unless-stopped
     build:
       context: ./notification-service
       dockerfile: Dockerfile
@@ -121,11 +124,47 @@ services:
     env_file:
       - ./.env
 
+# File Service
+  file-service:
+    container_name: ridehub-file-service
+    image: lean2708/ridehub-file-service:0.0.1
+    restart: unless-stopped
+    build:
+      context: ./file-service
+      dockerfile: Dockerfile
+    depends_on:
+      - eureka-server
+    ports:
+      - "8083:8083"
+    networks:
+      - ride_hub_backend
+    env_file:
+      - ./.env
+
+
+  # Profile Service
+  profile-service:
+    container_name: ridehub-profile-service
+    image: lean2708/ridehub-profile-service:0.0.1
+    restart: unless-stopped
+    build:
+      context: ./profile-service
+      dockerfile: Dockerfile
+    depends_on:
+      - eureka-server
+    ports:
+      - "8084:8084"
+    networks:
+      - ride_hub_backend
+    env_file:
+      - ./.env
+
 
  # API Gateway
   api-gateway:
     container_name: ridehub-api-gateway
     image: lean2708/ridehub-api-gateway:0.0.1
+    restart: unless-stopped
     build:
       context: ./api-gateway
       dockerfile: Dockerfile

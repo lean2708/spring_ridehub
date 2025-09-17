@@ -65,9 +65,9 @@ public class SwaggerAggregatorController {
 
         // Paths (merge cả 3 service)
         ObjectNode paths = mapper.createObjectNode();
-        mergePaths(paths, authDocs);
-        mergePaths(paths, profileDocs);
-        mergePaths(paths, fileDocs);
+        mergePaths(paths, authDocs, "/auth");
+        mergePaths(paths, profileDocs, "/profiles");
+        mergePaths(paths, fileDocs, "/files");
         root.set("paths", paths);
 
         // Components (merge schema 3 service)
@@ -100,7 +100,7 @@ public class SwaggerAggregatorController {
         }
     }
 
-    private void mergePaths(ObjectNode paths, JsonNode docs) {
+    private void mergePaths(ObjectNode paths, JsonNode docs, String servicePrefix) {
         if (docs == null || docs.get("paths") == null) {
             return;
         }
@@ -110,8 +110,10 @@ public class SwaggerAggregatorController {
                 return;
             }
 
-            String newPath = "/ride-hub/v1" + path;
+            // thêm prefix riêng cho service
+            String newPath = "/ride-hub/v1" + servicePrefix + path;
             paths.set(newPath, docs.get("paths").get(path));
         });
     }
+
 }
